@@ -19,7 +19,7 @@ public interface DAO<T> {
 			Class.forName("org.postgresql.Driver");
 
 			// estabelecendo a conexao com o banco de dados
-			conn = DriverManager.getConnection("jdbc:postgresql://127.0.0.1:5432/petshopdb", "topicos1", "123456");
+			conn = DriverManager.getConnection("jdbc:postgresql://127.0.0.1:5432/petshop", "topicos1", "123456");
 
 			// obrigando a trabalhar com commit e rollback
 			conn.setAutoCommit(false);

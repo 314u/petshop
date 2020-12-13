@@ -1,4 +1,4 @@
-package br.unitins.petshop.dao;
+package br.unitins.petshop.controller;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -10,7 +10,8 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
 import br.unitins.petshop.application.Util;
-import br.unitins.petshop.model.Produto;
+import br.unitins.petshop.dao.RacaoDAO;
+import br.unitins.petshop.model.Racao;
 
 @Named
 @ViewScoped
@@ -21,14 +22,14 @@ public class ConsultaProdutoController implements Serializable{
 
 	private Integer tipoFiltro;
 	private String filtro;
-	private List<Produto> listaProduto;
+	private List<Racao> listaProduto;
 	
 	public void novoProduto() {
-		Util.redirect("produto.xhtml");
+		Util.redirect("cadastroproduto.xhtml");
 	}
 	
 	public void pesquisar() {
-		ProdutoDAO dao = new ProdutoDAO();
+		RacaoDAO dao = new RacaoDAO();
 		try {
 			setListaProduto(dao.obterListaProduto(tipoFiltro, filtro));
 		} catch (Exception e) {
@@ -37,19 +38,19 @@ public class ConsultaProdutoController implements Serializable{
 		}
 	}
 	
-	public void editar(Produto produto) {
-		ProdutoDAO dao = new ProdutoDAO();
-		Produto editarProduto = null;
+	public void editar(Racao produto) {
+		RacaoDAO dao = new RacaoDAO();
+		Racao editarProduto = null;
 		try {
 			editarProduto = dao.obterUm(produto);
 		} catch (Exception e) {
 			e.printStackTrace();
-			Util.addErrorMessage("Não foi possível encontrar a midia no banco de dados.");
+			Util.addErrorMessage("Não foi possível encontrar a produto no banco de dados.");
 			return;
 		}
 		
 		Flash flash =  FacesContext.getCurrentInstance().getExternalContext().getFlash();
-		flash.put("midiaFlash", editarProduto);
+		flash.put("produtoFlash", editarProduto);
 		novoProduto();
 	}
 
@@ -69,13 +70,13 @@ public class ConsultaProdutoController implements Serializable{
 		this.filtro = filtro;
 	}
 
-	public List<Produto> getListaProduto() {
+	public List<Racao> getListaProduto() {
 		if (listaProduto == null)
-			listaProduto = new ArrayList<Produto>();
+			listaProduto = new ArrayList<Racao>();
 		return listaProduto;
 	}
 
-	public void setListaProduto(List<Produto> listaProduto) {
+	public void setListaProduto(List<Racao> listaProduto) {
 		this.listaProduto = listaProduto;
 	}
 }
