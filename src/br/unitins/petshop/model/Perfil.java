@@ -1,9 +1,8 @@
 package br.unitins.petshop.model;
 
 public enum Perfil {
-	
-	ADMINISTRADOR(1, "Administrador"),
-	CLIENTE(2, "Cliente");
+	USUARIO(1, "Usuário"),
+	ADMINISTRADOR(1, "Administrador");
 	
 	private int id;
 	private String label;

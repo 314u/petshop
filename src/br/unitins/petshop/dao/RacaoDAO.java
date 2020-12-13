@@ -10,39 +10,33 @@ import java.util.List;
 
 import br.unitins.petshop.application.Util;
 import br.unitins.petshop.model.Categoria;
-import br.unitins.petshop.model.FaixaEtaria;
-import br.unitins.petshop.model.Racao;
+import br.unitins.petshop.model.Produto;
 
-public class RacaoDAO implements DAO<Racao> {
+
+public class ProdutoDAO implements DAO<Produto>{
 
 	@Override
-	public void inserir(Racao obj) throws Exception {
+	public void inserir(Produto obj) throws Exception {
 		Exception exception = null;
 		Connection conn = DAO.getConnection();
-		AnimalDAO animal = new AnimalDAO();
+
 		StringBuffer sql = new StringBuffer();
 		sql.append("INSERT INTO ");
-		sql.append("racao ");
-		sql.append("  (marca, animal, faixaetaria, peso, preco, estoque, datavalidade, foto) ");
+		sql.append("produto ");
+		sql.append("  (nome, descricao, preco, estoque, validade, categoria) ");
 		sql.append("VALUES ");
-		sql.append("  ( ?, ?, ?, ?, ?, ?, ?, ?) ");
+		sql.append("  ( ?, ?, ?, ?, ?, ?) ");
 		PreparedStatement stat = null;
 
 		try {
 			stat = conn.prepareStatement(sql.toString());
-			
-			stat.setObject(1, obj.getMarca());
-			if(animal.obterId(obj.getAnimal())==null) animal.inserir(obj.getAnimal());
-			obj.getAnimal().setId(animal.obterId(obj.getAnimal()).getId());
-			
-			stat.setObject(2, obj.getAnimal().getId());
-			stat.setObject(3, (obj.getFaixaetaria() == null ? null : obj.getFaixaetaria().getId()));
-			stat.setDouble(4, obj.getPeso());
-			stat.setDouble(5, obj.getPreco());
-			stat.setInt(6, obj.getEstoque());
-			stat.setDate(7, Date.valueOf(obj.getDataValidade()));
-			stat.setString(8, obj.getFoto());
-			
+			stat.setString(1, obj.getNome());
+			stat.setString(2, obj.getDescricao());
+			stat.setDouble(3, obj.getPreco());
+			stat.setInt(4, obj.getEstoque());
+			stat.setDate(5, Date.valueOf(obj.getValidade()));
+			// ternario java
+			stat.setObject(6, (obj.getCategoria()== null ? null : obj.getCategoria().getId()));
 
 			stat.execute();
 			// efetivando a transacao
@@ -81,23 +75,22 @@ public class RacaoDAO implements DAO<Racao> {
 
 		if (exception != null)
 			throw exception;
-
+		
 	}
 
 	@Override
-	public void alterar(Racao obj) throws Exception {
+	public void alterar(Produto obj) throws Exception {
 		Exception exception = null;
 		Connection conn = DAO.getConnection();
 
 		StringBuffer sql = new StringBuffer();
 		sql.append("UPDATE produto SET ");
-		sql.append("  idanimal = ?, ");
-		sql.append("  marca = ?, ");
-		sql.append("  faixaetaria = ?, ");
-		sql.append("  kg = ?, ");
+		sql.append("  nome = ?, ");
+		sql.append("  descricao = ?, ");
 		sql.append("  preco = ?, ");
-		sql.append("  estoque = ? ");
-		sql.append("  datavalidade = ? ");
+		sql.append("  estoque = ?, ");
+		sql.append("  validade = ?, ");
+		sql.append("  categoria = ? ");
 		sql.append("WHERE ");
 		sql.append("  id = ? ");
 
@@ -105,13 +98,15 @@ public class RacaoDAO implements DAO<Racao> {
 
 		try {
 			stat = conn.prepareStatement(sql.toString());
-			stat.setObject(1, obj.getAnimal().getId());
-			stat.setString(2, obj.getMarca());
-			stat.setObject(3, (obj.getFaixaetaria() == null ? null : obj.getFaixaetaria().getId()));
-			stat.setDouble(4, obj.getPeso());
-			stat.setDouble(5, obj.getPreco());
-			stat.setInt(6, obj.getEstoque());
-			stat.setDate(7, Date.valueOf(obj.getDataValidade()));
+			stat.setString(1, obj.getNome());
+			stat.setString(2, obj.getDescricao());
+			stat.setDouble(3, obj.getPreco());
+			stat.setInt(4, obj.getEstoque());
+			stat.setDate(5, Date.valueOf(obj.getValidade()));
+			// ternario java
+			stat.setObject(6, (obj.getCategoria() == null ? null : obj.getCategoria().getId()));
+			stat.setInt(7, obj.getId());
+
 			stat.execute();
 			// efetivando a transacao
 			conn.commit();
@@ -150,10 +145,11 @@ public class RacaoDAO implements DAO<Racao> {
 		if (exception != null)
 			throw exception;
 
+		
 	}
 
 	@Override
-	public void excluir(Racao obj) throws Exception {
+	public void excluir(Produto obj) throws Exception {
 		Exception exception = null;
 		Connection conn = DAO.getConnection();
 
@@ -202,27 +198,28 @@ public class RacaoDAO implements DAO<Racao> {
 
 		if (exception != null)
 			throw exception;
-
+	
+		
 	}
 
 	@Override
-	public List<Racao> obterTodos() throws Exception {
+	public List<Produto> obterTodos() throws Exception {
 		Exception exception = null;
 		Connection conn = DAO.getConnection();
-		List<Racao> listaProduto = new ArrayList<Racao>();
+		List<Produto> listaProduto = new ArrayList<Produto>();
 
 		StringBuffer sql = new StringBuffer();
 		sql.append("SELECT ");
 		sql.append("  p.id, ");
-		sql.append("  p.marca, ");
-		sql.append("  p.faixaetaria, ");
-		sql.append("  p.kg, ");
+		sql.append("  p.nome, ");
+		sql.append("  p.descricao, ");
 		sql.append("  p.preco, ");
 		sql.append("  p.estoque, ");
-		sql.append("  p.datavalidade");
+		sql.append("  p.validade, ");
+		sql.append("  p.categoria ");
 		sql.append("FROM  ");
 		sql.append("  produto p ");
-		sql.append("ORDER BY p.marca ");
+		sql.append("ORDER BY p.nome ");
 
 		PreparedStatement stat = null;
 		try {
@@ -232,20 +229,21 @@ public class RacaoDAO implements DAO<Racao> {
 			ResultSet rs = stat.executeQuery();
 
 			while (rs.next()) {
-				Racao produto = new Racao();
+				Produto produto = new Produto();
 				produto.setId(rs.getInt("id"));
-				produto.setMarca(rs.getString("marca"));
-				produto.setFaixaetaria(FaixaEtaria.valueOf(rs.getInt("faixaetaria")));
-				produto.setPeso(rs.getDouble("kg"));
+				produto.setNome(rs.getString("nome"));
+				produto.setDescricao(rs.getString("descricao"));
 				produto.setPreco(rs.getDouble("preco"));
 				produto.setEstoque(rs.getInt("estoque"));
-				Date data = rs.getDate("datavalidade");
+				Date data = rs.getDate("validade");
+				produto.setValidade(data == null ? null : data.toLocalDate());
+				produto.setCategoria(Categoria.valueOf(rs.getInt("categoria")));
 
 				listaProduto.add(produto);
 			}
 
 		} catch (SQLException e) {
-			Util.addErrorMessage("Nï¿½o foi possivel buscar os dados do produto.");
+			Util.addErrorMessage("Não foi possivel buscar os dados do produto.");
 			e.printStackTrace();
 			exception = new Exception("Erro ao executar um sql em ProdutoDAO.");
 		} finally {
@@ -273,11 +271,11 @@ public class RacaoDAO implements DAO<Racao> {
 	}
 
 	@Override
-	public Racao obterUm(Racao obj) throws Exception {
+	public Produto obterUm(Produto obj) throws Exception {
 		Exception exception = null;
 		Connection conn = DAO.getConnection();
-
-		Racao produto = null;
+		
+		Produto produto = null;
 
 		StringBuffer sql = new StringBuffer();
 		sql.append("SELECT ");
@@ -292,6 +290,7 @@ public class RacaoDAO implements DAO<Racao> {
 		sql.append("  produto p ");
 		sql.append("WHERE p.id = ? ");
 
+
 		PreparedStatement stat = null;
 		try {
 
@@ -301,15 +300,19 @@ public class RacaoDAO implements DAO<Racao> {
 			ResultSet rs = stat.executeQuery();
 
 			if (rs.next()) {
-				produto = new Racao();
+				produto = new Produto();
 				produto.setId(rs.getInt("id"));
+				produto.setNome(rs.getString("nome"));
+				produto.setDescricao(rs.getString("descricao"));
 				produto.setPreco(rs.getDouble("preco"));
 				produto.setEstoque(rs.getInt("estoque"));
 				Date data = rs.getDate("validade");
+				produto.setValidade(data == null ? null : data.toLocalDate());
+				produto.setCategoria(Categoria.valueOf(rs.getInt("categoria")));
 			}
 
 		} catch (SQLException e) {
-			Util.addErrorMessage("Nï¿½o foi possivel buscar os dados do produto.");
+			Util.addErrorMessage("Não foi possivel buscar os dados do produto.");
 			e.printStackTrace();
 			exception = new Exception("Erro ao executar um sql em ProdutoDAO.");
 		} finally {
@@ -336,11 +339,11 @@ public class RacaoDAO implements DAO<Racao> {
 		return produto;
 	}
 
-	public List<Racao> obterListaProduto(Integer tipo, String filtro) throws Exception {
+	public List<Produto> obterListaProduto(Integer tipo, String filtro) throws Exception {
 		// tipo - 1 Nome; 2 Descricao
 		Exception exception = null;
 		Connection conn = DAO.getConnection();
-		List<Racao> listaProduto = new ArrayList<Racao>();
+		List<Produto> listaProduto = new ArrayList<Produto>();
 
 		StringBuffer sql = new StringBuffer();
 		sql.append("SELECT ");
@@ -362,22 +365,27 @@ public class RacaoDAO implements DAO<Racao> {
 		try {
 
 			stat = conn.prepareStatement(sql.toString());
-			stat.setString(1, tipo == 1 ? "%" + filtro + "%" : "%");
-			stat.setString(2, tipo == 2 ? "%" + filtro + "%" : "%");
+			stat.setString(1, tipo == 1 ? "%"+ filtro +"%" : "%");
+			stat.setString(2, tipo == 2 ? "%"+ filtro +"%" : "%");
 
 			ResultSet rs = stat.executeQuery();
 
 			while (rs.next()) {
-				Racao produto = new Racao();
+				Produto produto = new Produto();
 				produto.setId(rs.getInt("id"));
+				produto.setNome(rs.getString("nome"));
+				produto.setDescricao(rs.getString("descricao"));
 				produto.setPreco(rs.getDouble("preco"));
 				produto.setEstoque(rs.getInt("estoque"));
 				Date data = rs.getDate("validade");
+				produto.setValidade(data == null ? null : data.toLocalDate());
+				produto.setCategoria(Categoria.valueOf(rs.getInt("categoria")));
+
 				listaProduto.add(produto);
 			}
 
 		} catch (SQLException e) {
-			Util.addErrorMessage("Nï¿½o foi possivel buscar os dados do produto.");
+			Util.addErrorMessage("Não foi possivel buscar os dados do produto.");
 			e.printStackTrace();
 			exception = new Exception("Erro ao executar um sql em ProdutoDAO.");
 		} finally {
@@ -403,12 +411,12 @@ public class RacaoDAO implements DAO<Racao> {
 
 		return listaProduto;
 	}
-
-	public List<Racao> obterListaProdutoComEstoque(Integer tipo, String filtro) throws Exception {
+	
+	public List<Produto> obterListaProdutoComEstoque(Integer tipo, String filtro) throws Exception {
 		// tipo - 1 Nome; 2 Descricao
 		Exception exception = null;
 		Connection conn = DAO.getConnection();
-		List<Racao> listaProduto = new ArrayList<Racao>();
+		List<Produto> listaProduto = new ArrayList<Produto>();
 
 		StringBuffer sql = new StringBuffer();
 		sql.append("SELECT ");
@@ -431,23 +439,28 @@ public class RacaoDAO implements DAO<Racao> {
 		try {
 
 			stat = conn.prepareStatement(sql.toString());
-			stat.setString(1, tipo == 1 ? "%" + filtro + "%" : "%");
-			stat.setString(2, tipo == 2 ? "%" + filtro + "%" : "%");
+			stat.setString(1, tipo == 1 ? "%"+ filtro +"%" : "%");
+			stat.setString(2, tipo == 2 ? "%"+ filtro +"%" : "%");
 
 			ResultSet rs = stat.executeQuery();
 
 			while (rs.next()) {
-				Racao produto = new Racao();
+				Produto produto = new Produto();
 				produto.setId(rs.getInt("id"));
+				produto.setNome(rs.getString("nome"));
+				produto.setDescricao(rs.getString("descricao"));
 				produto.setPreco(rs.getDouble("preco"));
 				produto.setEstoque(rs.getInt("estoque"));
 				Date data = rs.getDate("validade");
+				produto.setValidade(data == null ? null : data.toLocalDate());
+				produto.setCategoria(Categoria.valueOf(rs.getInt("categoria")));
+				
 
 				listaProduto.add(produto);
 			}
 
 		} catch (SQLException e) {
-			Util.addErrorMessage("Nï¿½o foi possivel buscar os dados do produto.");
+			Util.addErrorMessage("Não foi possivel buscar os dados do produto.");
 			e.printStackTrace();
 			exception = new Exception("Erro ao executar um sql em ProdutoDAO.");
 		} finally {

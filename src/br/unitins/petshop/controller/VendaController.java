@@ -9,9 +9,9 @@ import javax.inject.Named;
 
 import br.unitins.petshop.application.Session;
 import br.unitins.petshop.application.Util;
-import br.unitins.petshop.dao.RacaoDAO;
+import br.unitins.petshop.dao.ProdutoDAO;
 import br.unitins.petshop.model.ItemVenda;
-import br.unitins.petshop.model.Racao;
+import br.unitins.petshop.model.Produto;
 
 @Named
 @ViewScoped
@@ -21,7 +21,7 @@ public class VendaController implements Serializable {
 	
 	private Integer tipoFiltro;
 	private String filtro;
-	private List<Racao> listaProduto;
+	private List<Produto> listaProduto;
 	
 	public void novaProduto() {
 		Util.redirect("cadastroproduto.xhtml");
@@ -29,7 +29,7 @@ public class VendaController implements Serializable {
 	
 	public void pesquisar() {
 		System.out.println(tipoFiltro);
-		RacaoDAO dao = new RacaoDAO();
+		ProdutoDAO dao = new ProdutoDAO();
 		try {
 			setListaProduto(dao.obterListaProdutoComEstoque(tipoFiltro, filtro));
 		} catch (Exception e) {
@@ -38,9 +38,9 @@ public class VendaController implements Serializable {
 		}
 	}
 	
-	public void addCarrinho(Racao produto) {
+	public void addCarrinho(Produto produto) {
 		try {
-			RacaoDAO dao = new RacaoDAO();
+			ProdutoDAO dao = new ProdutoDAO();
 			// obtendo os dados atuais da midia
 			produto = dao.obterUm(produto);
 			
@@ -61,7 +61,7 @@ public class VendaController implements Serializable {
 			// atualizando a sessao do carrinho de compras
 			Session.getInstance().setAttribute("carrinho", listaItemVenda);
 			
-			//Util.addInfoMessage("O produto: " + produto.getNome() + " foi adicionado ao carrinho.");
+			Util.addInfoMessage("O produto: " + produto.getNome() + " foi adicionado ao carrinho.");
 			
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -85,13 +85,13 @@ public class VendaController implements Serializable {
 		this.filtro = filtro;
 	}
 
-	public List<Racao> getListaProduto() {
+	public List<Produto> getListaProduto() {
 		if (listaProduto == null)
-			listaProduto = new ArrayList<Racao>();
+			listaProduto = new ArrayList<Produto>();
 		return listaProduto;
 	}
 
-	public void setListaProduto(List<Racao> listaProduto) {
+	public void setListaProduto(List<Produto> listaProduto) {
 		this.listaProduto = listaProduto;
 	}
 

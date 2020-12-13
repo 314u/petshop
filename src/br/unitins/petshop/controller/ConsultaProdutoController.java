@@ -10,8 +10,8 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Named;
 
 import br.unitins.petshop.application.Util;
-import br.unitins.petshop.dao.RacaoDAO;
-import br.unitins.petshop.model.Racao;
+import br.unitins.petshop.dao.ProdutoDAO;
+import br.unitins.petshop.model.Produto;
 
 @Named
 @ViewScoped
@@ -22,14 +22,14 @@ public class ConsultaProdutoController implements Serializable{
 
 	private Integer tipoFiltro;
 	private String filtro;
-	private List<Racao> listaProduto;
+	private List<Produto> listaProduto;
 	
 	public void novoProduto() {
 		Util.redirect("cadastroproduto.xhtml");
 	}
 	
 	public void pesquisar() {
-		RacaoDAO dao = new RacaoDAO();
+		ProdutoDAO dao = new ProdutoDAO();
 		try {
 			setListaProduto(dao.obterListaProduto(tipoFiltro, filtro));
 		} catch (Exception e) {
@@ -38,9 +38,9 @@ public class ConsultaProdutoController implements Serializable{
 		}
 	}
 	
-	public void editar(Racao produto) {
-		RacaoDAO dao = new RacaoDAO();
-		Racao editarProduto = null;
+	public void editar(Produto produto) {
+		ProdutoDAO dao = new ProdutoDAO();
+		Produto editarProduto = null;
 		try {
 			editarProduto = dao.obterUm(produto);
 		} catch (Exception e) {
@@ -70,13 +70,13 @@ public class ConsultaProdutoController implements Serializable{
 		this.filtro = filtro;
 	}
 
-	public List<Racao> getListaProduto() {
+	public List<Produto> getListaProduto() {
 		if (listaProduto == null)
-			listaProduto = new ArrayList<Racao>();
+			listaProduto = new ArrayList<Produto>();
 		return listaProduto;
 	}
 
-	public void setListaProduto(List<Racao> listaProduto) {
+	public void setListaProduto(List<Produto> listaProduto) {
 		this.listaProduto = listaProduto;
 	}
 }

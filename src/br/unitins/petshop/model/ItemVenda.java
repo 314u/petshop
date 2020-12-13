@@ -3,7 +3,7 @@ package br.unitins.petshop.model;
 public class ItemVenda {
 	private Integer id;  // 1-windows --> 55
 	private Double preco;// 2-linux   --> 55
-	private Racao produto;
+	private Produto produto;
 
 	public Integer getId() {
 		return id;
@@ -21,11 +21,11 @@ public class ItemVenda {
 		this.preco = preco;
 	}
 
-	public Racao getProduto() {
+	public Produto getProduto() {
 		return produto;
 	}
 
-	public void setProduto(Racao produto) {
+	public void setProduto(Produto produto) {
 		this.produto = produto;
 	}
 

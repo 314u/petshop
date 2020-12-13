@@ -10,7 +10,7 @@ import java.util.List;
 
 
 import br.unitins.petshop.model.ItemVenda;
-import br.unitins.petshop.model.Racao;
+import br.unitins.petshop.model.Produto;
 import br.unitins.petshop.model.Usuario;
 import br.unitins.petshop.model.Venda;
 
@@ -150,8 +150,8 @@ public class VendaDAO implements DAO<Venda> {
 				ItemVenda itemVenda = new ItemVenda();
 				itemVenda.setId(rs.getInt("id"));
 				itemVenda.setPreco(rs.getDouble("preco"));
-				RacaoDAO dao = new RacaoDAO();
-				itemVenda.setProduto(dao.obterUm(new Racao(rs.getInt("id_produto"))));
+				ProdutoDAO dao = new ProdutoDAO();
+				itemVenda.setProduto(dao.obterUm(new Produto(rs.getInt("id_produto"))));
 
 				listaItemVenda.add(itemVenda);
 			}
